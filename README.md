@@ -1,4 +1,4 @@
-# Router
+# Karadocteur / Router
 
 Il s'agit d'un routeur PHP puissant, léger et très simple d'utilisation.
 
