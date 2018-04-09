@@ -1,2 +1,2 @@
-# Router
+# router
 Simple PHP Router
