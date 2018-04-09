@@ -22,7 +22,7 @@
 
   "autoload": {
     "psr-4": {
-      "Karadocteur\\Routeur\\": "src/"
+      "Karadocteur\\Router\\": "src/"
     }
   }
   
