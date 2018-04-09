@@ -4,7 +4,7 @@ Il s'agit d'un routeur PHP puissant, léger et très simple d'utilisation.
 
 Ce système permet de gérer l'ensemble des routes / URL d'une application PHP en quelques lignes de code seulement.
 
-Il a été développé en vue d'être utilisé dans des applications ayant une architecture MVC (Modèles / Vues / Controleurs) et implémente donc la programmation orientée objet (POO).
+Il a été développé en vue d'être utilisé dans des applications ayant une architecture MVC (Modele / View / Controller) et implémente donc la programmation orientée objet (POO).
 
 ## Généralités sur le fonctionnement
 
@@ -14,7 +14,7 @@ Ce que nous appelons une Route, c'est un objet PHP qui permet de faire correspon
 
 Le principe est le suivant : lorsqu'un client tente de se connecter à l'application, le routeur analyse l'URL demandée et retourne la route correspondante. En récupérant celle-ci, vous aurez donc accès à la méthode et au controleur qui doivent être appelés ainsi qu'aux paramètres de l'URL.
 
-De plus, il est possible de générer des URL depuis les vues très facilement, grâce aux identifiants uniques.
+De plus, il est possible de générer des URL depuis les vues très facilement, grâce aux identifiants uniques des routes.
 
 ## Installation via composer
 
@@ -49,7 +49,7 @@ namespace Karadocteur\Router;
 
 // Exemple :
 $name = 'home';                       // Identifiant unique de la route : utile pour générer les URL depuis les vues
-$urlPrototype = '/';                  // Prototype de l'URL
+$urlPrototype = '/';                  // Prototype de l'URL : ici il s'agit de la racine du site
 $action = 'PagesController@index';    // Controleur "PagesController" et Méthode "index" à appeler pour gérer la page demandée
 $args = NULL;                         // Tableau d'arguments si l'URL doit comprendre des paramètres
 
