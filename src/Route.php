@@ -65,15 +65,11 @@ class Route {
   
   
     /**
-     * Vérifie et initialise les arguments de la route dans le bon ordre
+     * Initialise les arguments de la route dans l'ordre d'apparition du Prototype de l'URL
      * @param   array  $args  Liste des arguments de l'URL nécessaires pour créer une Route, sous forme ['id' => Route::PARAM_INT]
      * @return  Route
      */  
     public function setArgs(array $args){
-        $argsRequired = substr_count($this->urlPrototype, '{');
-        if(count($args) != $argsRequired){
-            throw new \LengthException('La Route ['.$this->name.'] nécessite '.$argsRequired.' argument(s) alors que '.count($args).' ont été passé(s)');
-        } 
         uksort($args, function($a, $b){
     	    $aCursor = strpos($this->urlPrototype, '{'.$a.'}');
     	    $bCursor = strpos($this->urlPrototype, '{'.$b.'}');
@@ -111,9 +107,19 @@ class Route {
      */
     public function setParams($params){
         $i = 0;
-        foreach($this->args AS $arg => $v){
-            $this->params[$arg] = isset($params[$i]) ? $params[$i] : $params[$arg];
-            $i++;
+        foreach($this->args AS $argKey => $argValue){     
+            if(isset($params[$i])){
+                $this->params[$argKey] = $params[$i];
+                $i++;
+            } else {
+                if(!isset($params[$argKey])){
+                    throw new \LengthException('La Route ['.$this->name.'] nécessite un argument appelé ['.$argKey.']');
+                }           
+                if(!preg_match('#('.$argValue.')#', $params[$argKey])){
+                    throw new \InvalidArgumentException('Le paramètre ["'.$argKey.'" => "'.$params[$argKey].'"] de la route ['.$this->name.'] doit correspond à la Regexp : '.$argValue);
+                }
+                $this->params[$argKey] = $params[$argKey];
+            }      
         }
         return $this;
     }
@@ -140,17 +146,18 @@ class Route {
   
     /**
      * Génère une URL qui correspond à cette Route, en fonction des paramètres si nécessaire
+     * @params string|null $root URL de ma racine du site (exemple : http://exemple.com)
      * @return string
      */
-    public function getUrlRequest(){
+    public function getUrlRequest($root = NULL){
         if(!is_array($this->args)){
-            return $this->urlPrototype;
+            return $root.$this->urlPrototype;
         }
-        $result = $this->urlPrototype;
-        foreach($this->args AS $argKey => $argValue){
-            $result = str_replace('{'.$argKey.'}', $this->params[$argKey], $result);
+        $url = $this->urlPrototype;
+        foreach($this->params AS $paramKey => $paramValue){
+            $url = str_replace('{'.$paramKey.'}', $paramValue, $url);
         }
-        return $result;
+        return $root.$url;
     }
   
   
