@@ -75,7 +75,7 @@ class Router {
      * @return Route
      */
     public function init(){
-    	if(!file_exists($this->routesPath)){
+        if(!file_exists($this->routesPath)){
             throw new \RuntimeException('Impossible d\'inclure le fichier de définition des routes : '.$this->routesPath);
         }
         require_once($this->routesPath);
@@ -120,17 +120,9 @@ class Router {
      * @return string                Exemple : https://exemple.com/blog/mon-article-8
      */
     public function url($name, $params = NULL){
-        $route = clone $this->routes[$name];       
-        foreach($route->getArgs() AS $argKey => $argValue){
-            if(!isset($params[$argKey])){
-                throw new \LengthException('La Route ['.$route->getName().'] nécessite un argument appelé ['.$argKey.']');
-            }           
-            if(!preg_match('#('.$argValue.')#', $params[$argKey])){
-                throw new \InvalidArgumentException('Le paramètre ["'.$argKey.'" => "'.$params[$argKey].'"] de la route ['.$route->getName().'] doit correspond à la Regexp : '.$argValue);
-            }
-        }            
+        $route = clone $this->routes[$name];        
         $route->setParams($params);
-        return $this->root.$route->getUrlRequest();
+        return $route->getUrlRequest($this->root);
     }
   
 }
