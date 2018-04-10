@@ -101,11 +101,16 @@ class Route {
   
   
     /**
-     * Initialise les paramètres envoyés dans l'URL par le client
-     * @param   array  $params  Liste des paramètres envoyés par le client dans l'URL
+     * Vérifie et initialise les paramètres de la route
+     * @param   array  $params  Liste des paramètres
      * @return  Route
      */
     public function setParams($params){
+        $countArgs = count($this->args);
+        $countParams = count($params);
+        if($countArgs != $countParams){
+            throw new \LengthException('La route [$this->name] doit avoir '.$countArgs.' paramètre(s), '.$countParams.' ont été passé(s)');
+        }
         $i = 0;
         foreach($this->args AS $argKey => $argValue){     
             if(isset($params[$i])){
