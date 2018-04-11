@@ -16,7 +16,7 @@ Ce que nous appelons une **Route**, c'est un *objet PHP* qui permet de faire cor
 
 Le principe est le suivant : lorsqu'un client tente de se connecter à l'application, le routeur analyse l'URL demandée et retourne la route correspondante. En récupérant celle-ci, vous aurez donc accès à la méthode et au controleur qui doivent être appelés ainsi qu'aux paramètres de l'URL.
 
-De plus, il est très facilement possible de **générer des URL complexes** depuis les vues, en fonction de leurs paramètres , grâce aux identifiants uniques des routes.
+De plus, il est très facilement possible de **générer des URL complexes** depuis les vues, en fonction de leurs paramètres, grâce aux identifiants uniques des routes.
 
 
 
@@ -122,7 +122,7 @@ Lors de la première utilisation du routeur, il est nécessaire de l'initialiser
 ```php
 use \Karadocteur\Router\Router;
 
-$routesPath = __DIR__.'/config/routes.php'; // Dépend de l'architecture de votre projet
+$routesPath = '/home/config/routes.php'; // Dépend de l'architecture de votre projet
 
 $router = Router::getInstance()
   ->setRoutesPath($routesPath)
@@ -130,7 +130,7 @@ $router = Router::getInstance()
 ```
 
 
-Pour pouvoir générer les routes en chemin absolue depuis les vues très facilement, il est intéressant de spécifier l'URL de racine du site dès l'initialisation du routeur, comme ceci :
+Pour pouvoir générer les routes en chemin absolue depuis les vues très facilement, il est intéressant de spécifier l'URL de la racine du site dès l'initialisation du routeur, comme ceci :
 
 ```php
 $root = 'https://example.com';
@@ -146,9 +146,6 @@ Une version plus courte est également possible :
 
 ```php
 use \Karadocteur\Router\Router;
-
-$root = 'https://example.com';
-$routesPath = __DIR__.'/config/routes.php'; // Dépend de l'architecture de votre projet
 
 $router = Router::getInstance($root, $routesPath);
 ```
@@ -167,7 +164,7 @@ $router = Router::getInstance();
 
 ## Gestion des erreurs durant l'éxécution du routeur
 
-Durant l'éxécution du routeur, il peut se produire de multiples erreurs. Celles vous sont rapportées sous forme d'Exception PHP qu'il est possible de capturer grâce à un try/catch.
+Durant l'éxécution du routeur, il peut se produire de multiples erreurs. Celles-ci vous sont rapportées sous forme d'Exception PHP qu'il est possible de capturer grâce à un `try/catch`.
 
 Un exemple est disponible dans la section ci-dessous.
 
@@ -180,9 +177,9 @@ Pour vérifier que l'URL demandée par le client est une route qui existe, c'est
 
 use \Karadocteur\Router\Router;
 
-// On défini quelques constantes de notre application
+// Pour l'exemple on définit quelques constantes de notre application
 $root = 'https://example.com';
-$routesPath = __DIR__./config/routes.php'; // Dépend de l'architecture de votre projet
+$routesPath = /home/config/routes.php'; // Dépend de l'architecture de votre projet
 
 // Pour poursuivre l'exemple on simule une requête sur l'URL "/blog/mon-super_article-8" via une méthod "GET"
 // Ces informations peuvent être récupérées via la variable $_SERVER ou via une implémentation de l'objet Request compatible avec le PSR7 (exemple : https://github.com/guzzle/psr7 )
@@ -201,9 +198,9 @@ try {
 
 // Vous pouvez ensuite vérifier si la route existe ou non
 if($route){
-  echo 'La route existe';
+  // La route existe         =>    Il faut appeler le controleur
 } else {
-  echo 'erreur 404';
+  // La route n'existe pas   =>    Il faut renvoyer une erreur 404
 }
 ```
 
