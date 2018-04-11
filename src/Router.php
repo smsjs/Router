@@ -7,19 +7,18 @@ namespace Karadocteur\Router;
  * Gestion des routes d'une application PHP
  */
 class Router {
-
   
   
-    /** @var  Router|null  Instance unique de cet objet Router */
+    /** @var  Router|null            Instance unique de l'objet Router */
     private static $_instance = NULL;
     
-    /** @var  string|null  URL de la racine du site (exemple : http://exemple.com) */
+    /** @var  string|null            URL de la racine du site (exemple : http://exemple.com) */
     private $root = NULL;
   
-    /** @var  string|null  Chemin vers le fichier qui liste toutes les Routes de l'application */
+    /** @var  string|null            Chemin vers le fichier qui liste toutes les Routes de l'application */
     private $routesPath = NULL;
   
-    /** @var  array|null  Tableau contenant la liste des routes du site (objets Route) */
+    /** @var  RoutesCollection|null  Objet RoutesCollection contenant la liste de toutes les routes du site (objets Route) */
     private $routes = NULL;
   
   
@@ -33,6 +32,7 @@ class Router {
     public static function getInstance($root = NULL, $routesPath = NULL){
         if(is_null(self::$_instance)){
             self::$_instance = new self();
+            self::$_instance->routes = new RoutesCollection();
             if(!is_null($root)){
                 self::$_instance->setRoot($root);
             }
@@ -45,7 +45,6 @@ class Router {
     }
     
     
-
     /**
      * Initialise l'URL de la racine du site (exemple : https://exemple.com)
      * @param   string  $root
@@ -60,7 +59,7 @@ class Router {
   
     /**
      * Défini le chemin vers le fichier chargé d'initialiser toutes les Routes de l'application
-     * @param  string  $path Chemin vers le fichier listant les Routes
+     * @param  string  $path  Chemin vers le fichier listant les Routes
      * @return Router
      */
     public function setRoutesPath($path){ 
@@ -85,26 +84,62 @@ class Router {
   
   
     /**
-     * Ajoute un objet Route à la liste des routes de l'application
+     * Ajoute un objet Route à la liste des routes de l'application (Objet RoutesCollection)
      * @param  string       $name          Identifiant unique de la route (utile pour la générer dans les vues)
      * @param  string       $urlPrototype  Prototype de l'URL pouvant contenir des arguments sous forme : {arg}
      * @param  string       $action        Controleur + méthode à appeler pour gérer la page à afficher, sous forme : "MyController@method"
      * @param  array|null   $args          Tableau d'arguments contenus dans le prototype de l'URL sous forme ['id' => '[0-9]+']
+     * @param  array|null   $accessibility Tableau des méthodes de requête accessibles pour cette route (exemple : ['get', 'post'])
+     * @return Route                       Retourne la route créée
      */
-    public function route($name, $urlPrototype, $action, $args = NULL){
-        $this->routes[$name] = new Route($name, $urlPrototype, $action, $args);
+    public function route($name, $urlPrototype, $action, $args = NULL, $accessibility = ['get']){        
+        if(isset($this->routes[$name])){
+            throw new \UnexpectedValueException('La route ['.$name.'] existe déjà, elle ne peut pas être définie 2 fois');
+        }       
+        $route = new Route($name, $urlPrototype, $action, $args, $accessibility);
+        $this->routes[$name] = $route;
+        return $route;
+    }
+    
+    
+    
+    /**
+     * Ajoute un objet Route à la liste des routes de l'application (Objet RoutesCollection) selon la méthode de requête GET
+     * @param  string       $name          Identifiant unique de la route (utile pour la générer dans les vues)
+     * @param  string       $urlPrototype  Prototype de l'URL pouvant contenir des arguments sous forme : {arg}
+     * @param  string       $action        Controleur + méthode à appeler pour gérer la page à afficher, sous forme : "MyController@method"
+     * @param  array|null   $args          Tableau d'arguments contenus dans le prototype de l'URL sous forme ['id' => '[0-9]+']
+     * @return Route                       Retourne la route créée
+     */
+    public function get($name, $urlPrototype, $action, $args = NULL){
+        return $this->route($name, $urlPrototype, $action, $args, ['GET']);
+    }
+    
+    
+    
+    /**
+     * Ajoute un objet Route à la liste des routes de l'application (Objet RoutesCollection) selon la méthode de requête POST
+     * @param  string       $name          Identifiant unique de la route (utile pour la générer dans les vues)
+     * @param  string       $urlPrototype  Prototype de l'URL pouvant contenir des arguments sous forme : {arg}
+     * @param  string       $action        Controleur + méthode à appeler pour gérer la page à afficher, sous forme : "MyController@method"
+     * @param  array|null   $args          Tableau d'arguments contenus dans le prototype de l'URL sous forme ['id' => '[0-9]+']
+     * @return Route                       Retourne la route créée 
+     */
+    public function post($name, $urlPrototype, $action, $args = NULL){
+        return $this->route($name, $urlPrototype, $action, $args, ['POST']);
     }
   
   
   
     /**
      * Retourne la Route correspondante à l'URL demandée par le client si elle existe, sinon retourne FALSE
-     * @param   string          $urlRequest    URL demandée par le client
+     * @param   string          $method        Méthode de requête demandée : GET, POST, etc
+     * @param   string          $urlRequest    URL demandée
      * @return  Route|boolean
      */
-    public function match($urlRequest){    
+    public function match($method, $urlRequest){    
         foreach($this->routes AS $route){
-            if($route->match($urlRequest)){
+            if($route->match($method, $urlRequest)){
                 return $route;
             }
         }
@@ -120,7 +155,7 @@ class Router {
      * @return string                Exemple : https://exemple.com/blog/mon-article-8
      */
     public function url($name, $params = NULL){
-        $route = clone $this->routes[$name];        
+        $route = clone $this->routes[$name];
         $route->setParams($params);
         return $route->getUrlRequest($this->root);
     }
