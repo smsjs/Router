@@ -23,6 +23,9 @@ class Route {
   
     /** @var  string      Identifiant unique de la route */
     private $name;
+    
+    /** @var  array       Tableau contenant la liste des méthodes de requête via lesquelles la route est accessible (exemple : ['get', 'post'] */
+    private $accessibility = [];
   
     /** @var  string      Prototype de l'URL correspondante à cette Route, si des arguments sont passés ils doivent être nommés comme ceci : {arg} */
     private $urlPrototype;
@@ -39,7 +42,7 @@ class Route {
     /** @var array|null   Liste des paramètres présents dans l'URL demandée par le client */
     private $params = NULL;
   
-    /** @var string|null  Prototype de l'URL dont les arguments sous forme d'expression régulière */
+    /** @var string|null  Prototype de l'URL avec les arguments sous forme d'expression régulière */
     private $regexp = NULL;
   
   
@@ -50,8 +53,9 @@ class Route {
      * @param  string       $urlPrototype   URL correspondante à la route
      * @param  string       $action         Nom de la méthode et du controleur à appeler pour gérer la route sous forme "MyController@method"
      * @param  array|null   $args           Liste des arguments de l'URL nécessaires pour créer une Route, sous forme ['id' => Route::PARAM_INT]
+     * @param  array|null   $accessibility  Méthodes de requête par lesquelles la route est accessible (exempe : ['get', 'post'])
      */
-    public function __construct($name, $urlPrototype, $action, $args = NULL){
+    public function __construct($name, $urlPrototype, $action, $args = NULL, $accessibility = ['get']){
         $this->name = $name;
         $this->urlPrototype = $urlPrototype;
         if(is_array($args)){
@@ -60,6 +64,7 @@ class Route {
         $parts = explode('@', $action, 2);
         $this->controller = $parts[0];
         $this->method = $parts[1];
+        $this->accessibility = array_map('strtoupper', $accessibility);
     }
   
   
@@ -83,10 +88,14 @@ class Route {
  
     /**
      * Vérifie si cette Route correspond à l'URL demandée par le client et si oui on initialise les paramètres envoyés
-     * @param   string   $urlRequest  URL demandée par le client
+     * @param   string   $method      Méthode de la requête : GET, POST, etc
+     * @param   string   $urlRequest  URL demandée
      * @return  boolean
      */
-    public function match($urlRequest){
+    public function match($method, $urlRequest){
+        if(!in_array(strtoupper($method), $this->accessibility)){
+            return FALSE;
+        }
         if(is_array($this->args)){
             $result = preg_match('#^'.$this->getRegexp().'$#', $urlRequest, $match);
             if($result){
@@ -106,25 +115,22 @@ class Route {
      * @return  Route
      */
     public function setParams($params){
-        $countArgs = count($this->args);
-        $countParams = count($params);
-        if($countArgs != $countParams){
-            throw new \LengthException('La route [$this->name] doit avoir '.$countArgs.' paramètre(s), '.$countParams.' ont été passé(s)');
+        if(count($this->args) != count($params)){
+            throw new \LengthException('La route ['.$this->name.'] doit avoir '.count($this->args).' paramètre(s), '.count($params).' ont été passé(s)');
         }
-        $i = 0;
-        foreach($this->args AS $argKey => $argValue){     
+        $i = 0;       
+        foreach($this->args AS $argKey => $argValue){             
             if(isset($params[$i])){
-                $this->params[$argKey] = $params[$i];
+                $params[$argKey] = $params[$i];
                 $i++;
-            } else {
-                if(!isset($params[$argKey])){
-                    throw new \LengthException('La Route ['.$this->name.'] nécessite un argument appelé ['.$argKey.']');
-                }           
-                if(!preg_match('#('.$argValue.')#', $params[$argKey])){
-                    throw new \InvalidArgumentException('Le paramètre ["'.$argKey.'" => "'.$params[$argKey].'"] de la route ['.$this->name.'] doit correspond à la Regexp : '.$argValue);
-                }
-                $this->params[$argKey] = $params[$argKey];
-            }      
+            }          
+            if(!isset($params[$argKey])){
+                throw new \LengthException('La Route ['.$this->name.'] nécessite un argument appelé ['.$argKey.']');
+            }                      
+            if(!preg_match('#('.$argValue.')#', $params[$argKey])){
+                throw new \InvalidArgumentException('Le paramètre ["'.$argKey.'" => "'.$params[$argKey].'"] de la route ['.$this->name.'] doit correspond à la Regexp : '.$argValue);
+            }
+            $this->params[$argKey] = $params[$argKey];
         }
         return $this;
     }
@@ -151,26 +157,29 @@ class Route {
   
     /**
      * Génère une URL qui correspond à cette Route, en fonction des paramètres si nécessaire
-     * @params string|null $root URL de ma racine du site (exemple : http://exemple.com)
-     * @return string
+     * @params   string|null   $root   URL de ma racine du site (exemple : http://exemple.com)
+     * @return   string
      */
     public function getUrlRequest($root = NULL){
         if(!is_array($this->args)){
-            return $root.$this->urlPrototype;
+            return rtrim($root.$this->urlPrototype, '/');
         }
         $url = $this->urlPrototype;
         foreach($this->params AS $paramKey => $paramValue){
             $url = str_replace('{'.$paramKey.'}', $paramValue, $url);
         }
-        return $root.$url;
+        return rtrim($root.$url, '/');
     }
   
   
   
     /** @return  string  Identifiant unique de la route */
     public function getName(){ return $this->name; }
+    
+    /** @return  string  Méthodes de requête par lesquelles la route est accessible (exemple : ['get', 'post'] */
+    public function getAccessibility(){ return $this->accessibility; }
   
-    /** @return  string  Prototype de l'URL correspondante à cette route, avec les arguments sous forme : {name} */
+    /** @return  string  Prototype de l'URL correspondant à cette route, avec les arguments sous forme : {name} */
     public function getUrlPrototype(){ return $this->urlPrototype; }
   
     /** @return  string  Controleur contenant la méthode gérant cette route */
