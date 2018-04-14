@@ -75,7 +75,7 @@ class Router {
      */
     public function init(){
         if(!file_exists($this->routesPath)){
-            throw new \RuntimeException('Impossible d\'inclure le fichier de définition des routes : '.$this->routesPath);
+            throw new \RuntimeException('It\'s impossible to include this file : '.$this->routesPath);
         }
         require_once($this->routesPath);
         return $this;
@@ -94,7 +94,7 @@ class Router {
      */
     public function route($name, $urlPrototype, $action, $args = NULL, $accessibility = ['get']){        
         if(isset($this->routes[$name])){
-            throw new \UnexpectedValueException('La route ['.$name.'] existe déjà, elle ne peut pas être définie 2 fois');
+            throw new \UnexpectedValueException('The route ['.$name.'] already exists, it can\'t be defined 2 times.');
         }       
         $route = new Route($name, $urlPrototype, $action, $args, $accessibility);
         $this->routes[$name] = $route;
@@ -156,7 +156,9 @@ class Router {
      */
     public function url($name, $params = NULL){
         $route = clone $this->routes[$name];
-        $route->setParams($params);
+        if(is_array($route->getArgs())){
+            $route->setParams($params);
+        }
         return $route->getUrlRequest($this->root);
     }
   
