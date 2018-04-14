@@ -162,13 +162,6 @@ $router = Router::getInstance();
 ```
 
 
-## Gestion des erreurs durant l'éxécution du routeur
-
-Durant l'éxécution du routeur, il peut se produire de multiples erreurs. Celles-ci vous sont rapportées sous forme d'Exception PHP qu'il est possible de capturer grâce à un `try/catch`.
-
-Un exemple est disponible dans la section ci-dessous.
-
-
 ## Récupérer la route de l'URL demandée par le client
 
 Pour vérifier que l'URL demandée par le client est une route qui existe, c'est très simple :
@@ -186,15 +179,12 @@ $routesPath = /home/config/routes.php'; // Dépend de l'architecture de votre pr
 $requestMethod  = 'GET';
 $urlRequest = '/blog/mon-super_article-8'; 
 
-// On lance un try/catch pour récupérer les Exceptions lancées durant l'éxécution du routeur s'il y en a
-try {
-    // On initialise le routeur une 1ère fois
-    $router = Router::getInstance($root, $routesPath);
-    // On récupère la route qui correspond à l'URL demandée
-    $route = $router->match($requestMethod, $urlRequest); // renvoie l'objet Route retrouvé, sinon renvoie FALSE
-} catch(Exception $e) {
-    echo $e->getMessage();
-}
+
+// On initialise le routeur une 1ère fois
+$router = Router::getInstance($root, $routesPath);
+
+// On récupère la route qui correspond à l'URL demandée
+$route = $router->match($requestMethod, $urlRequest);
 
 // Vous pouvez ensuite vérifier si la route existe ou non
 if($route){
