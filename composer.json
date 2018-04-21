@@ -1,20 +1,19 @@
 {
-  "name": "karadocteur/router",
-  "type": "library",
-  "description": "Simple PHP Router",
-  "keywords": ["router", "url"],
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Karadocteur",
-      "email": "karadocteur13@gmail.com"
+    "name": "karadocteur/router",
+    "description": "Simple PHP router for websites",
+    "keywords": ["router", "url"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Karadocteur",
+            "email": "karadocteur13@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+        "Karadocteur\\Router\\": "src/"
+        }
     }
-  ],
-  "require": {},
-  "autoload": {
-    "psr-4": {
-      "Karadocteur\\Router\\": "src/"
-    }
-  }
-  
 }
