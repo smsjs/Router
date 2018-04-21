@@ -43,6 +43,7 @@ class Router {
         }
         return self::$_instance;
     }
+
     
     
     /**
@@ -145,7 +146,7 @@ class Router {
         }
         return FALSE;
     }
-  
+    
   
   
     /**
