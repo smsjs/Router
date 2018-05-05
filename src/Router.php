@@ -2,6 +2,8 @@
 
 namespace Karadocteur\Router;
 
+use \Karadocteur\Collection\Collection;
+
 /**
  * Class Router
  * Gestion des routes d'une application PHP
@@ -18,7 +20,7 @@ class Router {
     /** @var  string|null            Chemin vers le fichier qui liste toutes les Routes de l'application */
     private $routesPath = NULL;
   
-    /** @var  RoutesCollection|null  Objet RoutesCollection contenant la liste de toutes les routes du site (objets Route) */
+    /** @var  Collection|null  Objet Collection contenant la liste de toutes les routes du site (objets Route) */
     private $routes = NULL;
   
   
@@ -32,7 +34,7 @@ class Router {
     public static function getInstance($root = NULL, $routesPath = NULL){
         if(is_null(self::$_instance)){
             self::$_instance = new self();
-            self::$_instance->routes = new RoutesCollection();
+            self::$_instance->routes = new Collection();
             if(!is_null($root)){
                 self::$_instance->setRoot($root);
             }
@@ -85,7 +87,7 @@ class Router {
   
   
     /**
-     * Ajoute un objet Route à la liste des routes de l'application (Objet RoutesCollection)
+     * Ajoute un objet Route à la liste des routes de l'application (Objet Collection)
      * @param  string       $name          Identifiant unique de la route (utile pour la générer dans les vues)
      * @param  string       $urlPrototype  Prototype de l'URL pouvant contenir des arguments sous forme : {arg}
      * @param  string       $action        Controleur + méthode à appeler pour gérer la page à afficher, sous forme : "MyController@method"
@@ -105,7 +107,7 @@ class Router {
     
     
     /**
-     * Ajoute un objet Route à la liste des routes de l'application (Objet RoutesCollection) selon la méthode de requête GET
+     * Ajoute un objet Route à la liste des routes de l'application (Objet Collection) selon la méthode de requête GET
      * @param  string       $name          Identifiant unique de la route (utile pour la générer dans les vues)
      * @param  string       $urlPrototype  Prototype de l'URL pouvant contenir des arguments sous forme : {arg}
      * @param  string       $action        Controleur + méthode à appeler pour gérer la page à afficher, sous forme : "MyController@method"
@@ -119,7 +121,7 @@ class Router {
     
     
     /**
-     * Ajoute un objet Route à la liste des routes de l'application (Objet RoutesCollection) selon la méthode de requête POST
+     * Ajoute un objet Route à la liste des routes de l'application (Objet Collection) selon la méthode de requête POST
      * @param  string       $name          Identifiant unique de la route (utile pour la générer dans les vues)
      * @param  string       $urlPrototype  Prototype de l'URL pouvant contenir des arguments sous forme : {arg}
      * @param  string       $action        Controleur + méthode à appeler pour gérer la page à afficher, sous forme : "MyController@method"
