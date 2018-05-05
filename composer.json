@@ -10,10 +10,12 @@
             "email": "karadocteur@outlook.fr"
         }
     ],
-    "require": {},
+    "require": {
+        "karadocteur/collection": "^1.0"
+    },
     "autoload": {
         "psr-4": {
-        "Karadocteur\\Router\\": "src/"
+            "Karadocteur\\Router\\": "src/"
         }
     }
 }

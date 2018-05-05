@@ -31,7 +31,7 @@ composer require karadocteur/router
 Et pour utiliser l'autoloader, évidemment :
 
 ```php
-require_once(__DIR__.'/vendor/autoload.php'); // Dépend de l'architecture de votre projet
+require_once __DIR__.'/vendor/autoload.php'; // Dépend de l'architecture de votre projet
 ```
 
 
@@ -172,7 +172,7 @@ use \Karadocteur\Router\Router;
 
 // Pour l'exemple on définit quelques constantes de notre application
 $root = 'https://example.com';
-$routesPath = /home/config/routes.php'; // Dépend de l'architecture de votre projet
+$routesPath = '/home/config/routes.php'; // Dépend de l'architecture de votre projet
 
 // Pour poursuivre l'exemple on simule une requête sur l'URL "/blog/mon-super_article-8" via une méthod "GET"
 // Ces informations peuvent être récupérées via la variable $_SERVER ou via une implémentation de l'objet Request compatible avec le PSR7 (exemple : https://github.com/guzzle/psr7 )
