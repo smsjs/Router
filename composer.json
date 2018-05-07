@@ -1,13 +1,13 @@
 {
-    "name": "karadocteur/router",
+    "name": "smsjs/router",
     "description": "Simple PHP router for websites",
     "keywords": ["router", "url"],
     "type": "library",
     "license": "MIT",
     "authors": [
         {
-            "name": "Karadocteur",
-            "email": "karadocteur@outlook.fr"
+            "name": "smsjs",
+            "email": "smsjs@163.com"
         }
     ],
     "require": {
@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Karadocteur\\Router\\": "src/"
+            "Laibao\\Router\\": "src/"
         }
     }
 }
